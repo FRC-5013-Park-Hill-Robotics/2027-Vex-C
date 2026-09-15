@@ -1,6 +1,8 @@
 #include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
-	
+pros::MotorGroup left_motors({1, 2, 3}); pros::MotorGearset::blue); // left motors on ports 1, 2, 3
+pros::MotorGroup right_motors({4, 5, 6}); pros::MotorGearset::blue); // right motors on ports 4, 5, 6	
+
 /**
  * A callback function for LLEMU's center button.
  *
