@@ -6,6 +6,8 @@ pros::MotorGroup left_motor_group({1, 2}, pros::MotorGears::green);
 // right motor group
 pros::MotorGroup right_motor_group({-3, -4}, pros::MotorGears::green);
 
+pros::Motor intake_motor(6, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
+
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               &right_motor_group, // right motor group
@@ -78,15 +80,6 @@ lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
                                   1.019 // expo curve gain
 );
 
-// create the chassis
-lemlib::Chassis chassis(drivetrain,
-                        lateral_controller,
-                        angular_controller,
-                        sensors,
-                        &throttle_curve, 
-                        &steer_curve
-);
-
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 void opcontrol() {
@@ -105,10 +98,10 @@ void opcontrol() {
 }
 
 // initialize function. Runs on program startup
-void initialize() 
+void initialize() {
 
-// this runs at the start of the program
-void initialize() 
+}
+
 
 /**
  * A callback function for LLEMU's center button.
@@ -116,7 +109,9 @@ void initialize()
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() 
+void on_center_button() {
+
+} 
 
 
 /**
