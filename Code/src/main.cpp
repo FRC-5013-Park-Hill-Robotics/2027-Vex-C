@@ -62,11 +62,14 @@ lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
 );
 
 // create the chassis
-lemlib::Chassis chassis(drivetrain, // drivetrain settings
-                        lateral_controller, // lateral PID settings
-                        angular_controller, // angular PID settings
-                        sensors // odometry sensors
+lemlib::Chassis chassis(drivetrain,
+                        lateral_controller,
+                        angular_controller,
+                        sensors,
+                        &throttle_curve, 
+                        &steer_curve
 );
+
 
 // input curve for throttle input during driver control
 lemlib::ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
@@ -88,10 +91,12 @@ void opcontrol() {
         // get left y and right y positions
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+        int RightTrigger = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_TRIGGER);
+        int LeftTrigger = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_TRIGGER);
 
         // move the robot
         chassis.tank(leftY, rightY);
-
+        intake_motor.move(RightTrigger - LeftTrigger);
         // delay to save resources
         pros::delay(25);
     }
