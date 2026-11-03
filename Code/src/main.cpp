@@ -4,9 +4,13 @@
 // left motor group
 pros::MotorGroup left_motor_group({1, 2}, pros::MotorGears::green);
 // right motor group
-pros::MotorGroup right_motor_group({-3, -4}, pros::MotorGears::green);
+pros::MotorGroup right_motor_group({-19, -20}, pros::MotorGears::green);
 
-pros::Motor intake_motor(6, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intake_motor(7, pros::MotorGears::green, false, pros::E_MOTOR_ENCODER_DEGREES);
+
+pros::MotorGroup lift_motor({8, -9}, pros::MotorGears::green);
+
+pros::Motor intake_rotation_motor(10, pros::MotorGears::green, false, pros::E_MOTOR_ENCODER_DEGREES);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
@@ -18,11 +22,11 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
 );
 
 // imu
-pros::Imu imu(10);
+pros::Imu imu(3);
 // horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(4);
+pros::Rotation horizontal_encoder(5);
 // vertical tracking wheel encoder
-pros::Rotation vertical_encoder(5);
+pros::Rotation vertical_encoder(6);
 
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 1);
@@ -91,12 +95,18 @@ void opcontrol() {
         // get left y and right y positions
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-        int R1 = controller.get_analog(pros::E_CONTROLLER_ANALOG_R1);
-        int R2 = controller.get_analog(pros::E_CONTROLLER_ANALOG_R2);
+        int rightTrigger1 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+        int rightTrigger2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+        int leftTrigger1 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+        int leftTrigger2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+        int up = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+        int down = controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
 
         // move the robot
         chassis.tank(leftY, rightY);
-        intake_motor.move(R2 - R1);
+        intake_motor.move(rightTrigger1 - rightTrigger2);
+        lift_motor.move(leftTrigger1 - leftTrigger2);
+        intake_rotation_motor.move(up - down);
         // delay to save resources
         pros::delay(25);
     }
@@ -156,7 +166,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+    chassis.moveToPoint(20, 15, 4000, {maxSpeed: 60});
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
