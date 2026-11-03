@@ -91,12 +91,12 @@ void opcontrol() {
         // get left y and right y positions
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-        int RightTrigger = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_TRIGGER);
-        int LeftTrigger = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_TRIGGER);
+        int R1 = controller.get_analog(pros::E_CONTROLLER_ANALOG_R1);
+        int R2 = controller.get_analog(pros::E_CONTROLLER_ANALOG_R2);
 
         // move the robot
         chassis.tank(leftY, rightY);
-        intake_motor.move(RightTrigger - LeftTrigger);
+        intake_motor.move(R2 - R1);
         // delay to save resources
         pros::delay(25);
     }
