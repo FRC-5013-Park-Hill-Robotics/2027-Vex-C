@@ -6,11 +6,13 @@ pros::MotorGroup left_motor_group({1, 2}, pros::MotorGears::green);
 // right motor group
 pros::MotorGroup right_motor_group({-19, -20}, pros::MotorGears::green);
 
-pros::Motor intake_motor(7, pros::MotorGears::green, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intake_motor(7, pros::MotorGears::green);
 
 pros::MotorGroup lift_motor({8, -9}, pros::MotorGears::green);
 
-pros::Motor intake_rotation_motor(10, pros::MotorGears::green, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intake_rotation_motor(10, pros::MotorGears::green);
+
+pros::Motor toggle_motor(11, pros::MotorGears::green);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
@@ -65,26 +67,14 @@ lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               0 // maximum acceleration (slew)
 );
 
+// input curve for throttle input during driver control
+
+
 // create the chassis
 lemlib::Chassis chassis(drivetrain,
                         lateral_controller,
                         angular_controller,
-                        sensors,
-                        &throttle_curve, 
-                        &steer_curve
-);
-
-
-// input curve for throttle input during driver control
-lemlib::ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
-                                     10, // minimum output where drivetrain will move out of 127
-                                     1.019 // expo curve gain
-);
-
-// input curve for steer input during driver control
-lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
-                                  10, // minimum output where drivetrain will move out of 127
-                                  1.019 // expo curve gain
+                        sensors
 );
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -101,12 +91,15 @@ void opcontrol() {
         int leftTrigger2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
         int up = controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
         int down = controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+        int left = controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
+        int right = controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
 
         // move the robot
         chassis.tank(leftY, rightY);
         intake_motor.move(rightTrigger1 - rightTrigger2);
         lift_motor.move(leftTrigger1 - leftTrigger2);
         intake_rotation_motor.move(up - down);
+        toggle_motor.move(left - right);
         // delay to save resources
         pros::delay(25);
     }
