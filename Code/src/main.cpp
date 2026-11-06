@@ -3,19 +3,16 @@
 
 // left motor group
 pros::MotorGroup left_motor_group({1, 2}, pros::MotorGears::green);
+
 // right motor group
 pros::MotorGroup right_motor_group({-19, -20}, pros::MotorGears::green);
 
-pros::Motor intake_motor(7, pros::MotorGears::green);
-
 pros::MotorGroup lift_motor({8, -9}, pros::MotorGears::green);
-
 pros::Motor intake_rotation_motor(10, pros::MotorGears::green);
-
+pros::Motor intake_motor(7, pros::MotorGears::green);
 pros::Motor toggle_motor(11, pros::MotorGears::green);
 
-// drivetrain settings
-lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
+lemlib::Drivetrain drivetrain(&left_motor_group,
                               &right_motor_group, // right motor group
                               11.982, // track width
                               lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
@@ -93,13 +90,41 @@ void opcontrol() {
         int down = controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
         int left = controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
         int right = controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
+        intake_motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        lift_motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        intake_rotation_motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        toggle_motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
         // move the robot
         chassis.tank(leftY, rightY);
-        intake_motor.move(rightTrigger1 - rightTrigger2);
-        lift_motor.move(leftTrigger1 - leftTrigger2);
-        intake_rotation_motor.move(up - down);
-        toggle_motor.move(left - right);
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+        intake_motor.move(127);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+        intake_motor.move(-127);
+    } else {
+        intake_motor.move(0);
+    }
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+        lift_motor.move(127);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+        lift_motor.move(-127);
+    } else {
+        lift_motor.move(0);
+    }
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+        intake_rotation_motor.move(127);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+        intake_rotation_motor.move(-127);
+    } else {
+        intake_rotation_motor.move(0);
+    }    
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+        toggle_motor.move(127);
+    } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        toggle_motor.move(-127);
+    } else {
+        toggle_motor.move(0);
+    }
         // delay to save resources
         pros::delay(25);
     }
@@ -160,7 +185,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-    chassis.moveToPoint(20, 15, 4000, {maxSpeed: 60});
+    
 }
 
 /**
